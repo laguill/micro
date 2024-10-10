@@ -1,6 +1,7 @@
 VERSION = "3.5.1"
 
 local micro = import("micro")
+local display = import("micro/display")
 local config = import("micro/config")
 local shell = import("micro/shell")
 local buffer = import("micro/buffer")
@@ -74,7 +75,7 @@ end
 local function get_ignored_files(tar_dir)
 	-- True/false if the target dir returns a non-fatal error when checked with 'git status'
 	local function has_git()
-		local git_rp_results = shell.ExecCommand('git  -C "' .. tar_dir .. '" rev-parse --is-inside-work-tree')
+		local git_rp_results = RunShellCommand('git  -C "' .. tar_dir .. '" rev-parse --is-inside-work-tree')
 		return git_rp_results:match("^true%s*$")
 	end
 	local readout_results = {}
@@ -82,7 +83,7 @@ local function get_ignored_files(tar_dir)
 	if has_git() then
 		-- If the dir is a git dir, get all ignored in the dir
 		local git_ls_results =
-			shell.ExecCommand('git -C "' .. tar_dir .. '" ls-files . --ignored --exclude-standard --others --directory')
+			RunShellCommand('git -C "' .. tar_dir .. '" ls-files . --ignored --exclude-standard --others --directory')
 		-- Cut off the newline that is at the end of each result
 		for split_results in string.gmatch(git_ls_results, "([^\r\n]+)") do
 			-- git ls-files adds a trailing slash if it's a dir, so we remove it (if it is one)
@@ -221,6 +222,7 @@ local function dirname_and_join(path, join_name)
 	-- Joins with OS-specific slashes
 	return filepath.Join(leading_path, join_name)
 end
+
 
 -- Hightlights the line when you move the cursor up/down
 local function select_line(last_y)
@@ -500,11 +502,63 @@ local function go_back_dir()
 	local one_back_dir = filepath.Dir(current_dir)
 	-- Try opening, assuming they aren't at "root", by checking if it matches last dir
 	if one_back_dir ~= current_dir then
-		-- If filepath.Dir returns different, then they can move back..
+		-- If DirectoryName returns different, then they can move back..
 		-- so we update the current dir and refresh
 		update_current_dir(one_back_dir)
 	end
 end
+
+-- open_tree setup's the view
+local function open_tree()
+	-- Open a new Vsplit (on the very left)
+	micro.CurPane():VSplitIndex(buffer.NewBuffer("", "filemanager"), false)
+	-- Save the new view so we can access it later
+	tree_view = micro.CurPane()
+	
+	-- Set the width of tree_view to 30% & lock it
+    tree_view:ResizePane(20)
+	-- Set the type to unsavable
+    -- tree_view.Buf.Type = buffer.BTLog
+    tree_view.Buf.Type.Scratch = true
+    tree_view.Buf.Type.Readonly = true
+
+	-- Set the various display settings, but only on our view (by using SetLocalOption instead of SetOption)
+	-- NOTE: Micro requires the true/false to be a string
+	-- Softwrap long strings (the file/dir paths)
+    tree_view.Buf:SetOptionNative("softwrap", true)
+    -- No line numbering
+    tree_view.Buf:SetOptionNative("ruler", false)
+    -- Is this needed with new non-savable settings from being "vtLog"?
+    tree_view.Buf:SetOptionNative("autosave", false)
+    -- Don't show the statusline to differentiate the view from normal views
+    tree_view.Buf:SetOptionNative("statusformatr", "")
+    tree_view.Buf:SetOptionNative("statusformatl", "filemanager")
+    tree_view.Buf:SetOptionNative("scrollbar", false)
+
+	-- Fill the scanlist, and then print its contents to tree_view
+	update_current_dir(os.Getwd())
+	-- @Jakku Night: Moves the cursor to the next tab:
+	micro.CurPane():NextSplit()
+end
+
+-- close_tree will close the tree plugin view and release memory.
+local function close_tree()
+	if tree_view ~= nil then
+		tree_view:Quit()
+		tree_view = nil
+		clear_messenger()
+	end
+end
+
+-- toggle_tree will toggle the tree view visible (create) and hide (delete).
+function toggle_tree()
+	if tree_view == nil then
+		open_tree()
+	else
+		close_tree()
+	end
+end
+
 
 -- Tries to open the current index
 -- If it's the top dir indicator, or separator, nothing happens
@@ -526,7 +580,11 @@ local function try_open_at_y(y)
 			-- If it's a file, then open it
 			micro.InfoBar():Message("Filemanager opened ", scanlist[y].abspath)
 			-- Opens the absolute path in new vertical view
-			micro.CurPane():VSplitIndex(buffer.NewBufferFromFile(scanlist[y].abspath), true)
+			--micro.CurPane():VSplitIndex(buffer.NewBufferFromFile(scanlist[y].abspath), true)
+			-- @Jakku Night: Open file in a new tab:
+			close_tree()
+			micro.CurPane():NewTabCmd({scanlist[y].abspath})
+			open_tree()
 			-- Resizes all views after opening a file
 			-- tabs[curTab + 1]:Resize()
 		end
@@ -1006,6 +1064,34 @@ end
 -- Other than things we flat-out fail
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+-- @Jakku Night: Closes tree BEFORE switching tabs:
+function preAddTab()
+	close_tree()
+end
+function preNextTab()
+	close_tree()
+end
+function prePreviousTab()
+	close_tree()
+end
+function preTabSwitchCmd()
+	close_tree()
+end
+
+-- @Jakku Night: Opens tree AFTER switching tabs:
+function onAddTab()
+	open_tree()
+end
+function onNextTab()
+	open_tree()
+end
+function onPreviousTab()
+	open_tree()
+end
+function onTabSwitchCmd()
+	open_tree()
+end
+
 -- Close current
 function preQuit(view)
 	if view == tree_view then
@@ -1013,7 +1099,17 @@ function preQuit(view)
 		close_tree()
 		-- Don't actually "quit", otherwise it closes everything without saving for some reason
 		return false
+	else
+		-- @Jakku Night: Closes the tree:
+		close_tree()
+		-- Don't actually "quit", otherwise it closes everything without saving for some reason
+		return true
 	end
+end
+
+-- @Jakku Night: Opens a new tree when switching to a new tab after closing the previous one:
+function onQuit()
+	open_tree()
 end
 
 -- Close all
@@ -1095,6 +1191,14 @@ function preMousePress(view, event)
 		try_open_at_y(new_y)
 		-- Don't actually allow the mousepress to trigger, so we avoid highlighting stuff
 		return false
+	end
+	return true
+end
+
+-- @Jakku Night: Opens a new tree if tab switched:
+function onMousePress(view, event)
+	if micro.CurTab() ~= tree_view:Tab() then
+		micro.InfoBar():Message("Tab was Switched.")
 	end
 end
 
@@ -1351,7 +1455,7 @@ function init()
     config.RegisterCommonOption("filemanager", "foldersfirst", true)
     -- Lets the user have the filetree auto-open any time Micro is opened
     -- false by default, as it's a rather noticable user-facing change
-    config.RegisterCommonOption("filemanager", "openonstart", false)
+    config.RegisterCommonOption("filemanager", "openonstart", true)
 
     -- Open/close the tree view
     config.MakeCommand("tree", toggle_tree, config.NoComplete)
