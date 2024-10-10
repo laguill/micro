@@ -1,0 +1,26 @@
+{
+  "*.js": {
+    "tabsize": 2
+  },
+  "*.py": {
+    "tabsize": 4
+  },
+  "*.ts": {
+    "tabsize": 2
+  },
+  "autosu": true,
+  "colorscheme": "catppuccin-frappe",
+  "diffgutter": true,
+  "eofnewline": true,
+  "ignorecase": false,
+  "mkparents": true,
+  "pluginchannels": [
+    "https://raw.githubusercontent.com/micro-editor/plugin-channel/master/channel.json"
+  ],
+  "pluginrepos": [],
+  "scrollbar": true,
+  "softwrap": true,
+  "statusformatr": "$(status.branch) | $(status.hash) | $(status.size)",
+  "tabstospaces": true,
+  "wordwrap": true
+}
