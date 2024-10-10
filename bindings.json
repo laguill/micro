@@ -1,5 +1,9 @@
 {
     "Alt-/": "lua:comment.comment",
+    "Alt-d": "command:definition",
+    "Alt-f": "command:format",
+    "Alt-k": "command:hover",
+    "Alt-r": "command:references",
     "CtrlP": "command:palettero",
     "CtrlSpace": "command:palettero",
     "CtrlUnderscore": "lua:comment.comment",

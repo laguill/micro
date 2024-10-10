@@ -1,26 +1,35 @@
 {
-  "*.js": {
-    "tabsize": 2
-  },
-  "*.py": {
-    "tabsize": 4
-  },
-  "*.ts": {
-    "tabsize": 2
-  },
-  "autosu": true,
-  "colorscheme": "catppuccin-frappe",
-  "diffgutter": true,
-  "eofnewline": true,
-  "ignorecase": false,
-  "mkparents": true,
-  "pluginchannels": [
-    "https://raw.githubusercontent.com/micro-editor/plugin-channel/master/channel.json"
-  ],
-  "pluginrepos": [],
-  "scrollbar": true,
-  "softwrap": true,
-  "statusformatr": "$(status.branch) | $(status.hash) | $(status.size)",
-  "tabstospaces": true,
-  "wordwrap": true
+    "*.js": {
+        "tabsize": 2
+    },
+    "*.py": {
+        "tabsize": 4
+    },
+    "*.ts": {
+        "tabsize": 2
+    },
+    "autosu": true,
+    "colorscheme": "catppuccin-frappe",
+    "diffgutter": true,
+    "hlsearch": true,
+    "ignorecase": false,
+ 	"lsp.server": "python=pyls,go=gopls,typescript=deno lsp,rust=rust-analyzer",
+   	"lsp.formatOnSave": true,
+   	"lsp.ignoreMessages": "LS message1 to ignore|LS message 2 to ignore|...",
+   	"lsp.tabcompletion": true,
+   	"lsp.ignoreTriggerCharacters": "completion,signature",
+   	"lsp.autocompleteDetails": false,
+    "mkparents": true,
+    "pluginchannels": [
+        "https://raw.githubusercontent.com/micro-editor/plugin-channel/master/channel.json"
+    ],
+    "pluginrepos": [],
+    "reload": auto,
+    "rmtrailingws": true,
+    "scrollbar": true,
+    "softwrap": true,
+    "statusformatr": "$(status.branch) | $(status.hash) | $(status.size)",
+    "tabstospaces": true,
+    "wordwrap": true
+    
 }
