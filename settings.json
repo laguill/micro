@@ -11,25 +11,24 @@
     "autosu": true,
     "colorscheme": "catppuccin-frappe",
     "diffgutter": true,
+    "filemanager-openonstart": false,
+    "filemanager.nerdfonts": true,
     "hlsearch": true,
     "ignorecase": false,
- 	"lsp.server": "python=pyls,go=gopls,typescript=deno lsp,rust=rust-analyzer",
-   	"lsp.formatOnSave": true,
-   	"lsp.ignoreMessages": "LS message1 to ignore|LS message 2 to ignore|...",
-   	"lsp.tabcompletion": true,
-   	"lsp.ignoreTriggerCharacters": "completion,signature",
-   	"lsp.autocompleteDetails": false,
+    "lsp.ignoreMessages": "LS message1 to ignore|LS message 2 to ignore|...",
+    "lsp.ignoreTriggerCharacters": "completion,signature",
+    "lsp.server": "python=pyls,go=gopls,typescript=deno lsp,rust=rust-analyzer",
     "mkparents": true,
     "pluginchannels": [
-        "https://raw.githubusercontent.com/micro-editor/plugin-channel/master/channel.json"
+        "https://raw.githubusercontent.com/micro-editor/plugin-channel/master/channel.json",
+        "https://raw.githubusercontent.com/Neko-Box-Coder/unofficial-plugin-channel/stable/channel.json"
     ],
     "pluginrepos": [],
-    "reload": auto,
+    "reload": "auto",
     "rmtrailingws": true,
     "scrollbar": true,
     "softwrap": true,
     "statusformatr": "$(status.branch) | $(status.hash) | $(status.size)",
     "tabstospaces": true,
     "wordwrap": true
-    
 }

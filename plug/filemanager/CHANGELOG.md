@@ -4,19 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [3.5.2] - 2024-10-11
 
-## 3.5.1 - 2023-05-16
+### Changed
 
-### Fixed
-
-- Some commands('rename','touch','mkdir') by [ryo-inagaki](https://github.com/micro-editor/updated-plugins/blob/master/filemanager-plugin/filemanager.lua)
-
-## 3.5.0 - 2023-04-23
-
-### Added
-
-- Adds persistence across multiple tabs when switching by [jakkunight](https://github.com/jakkunight/filemanager-plugin/blob/master/filemanager.lua)
+- Open file from file tree in new tab instead hsplit
+  merged from https://github.com/claromes/filemanager-plugin/
 
 ## [3.4.0] - 2018-10-22
 

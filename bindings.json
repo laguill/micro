@@ -4,10 +4,15 @@
     "Alt-f": "command:format",
     "Alt-k": "command:hover",
     "Alt-r": "command:references",
+    "Ctrl-t": "command:set filemanager.showdotfiles true,command:tree",
     "CtrlP": "command:palettero",
-    "CtrlSpace": "command:palettero",
+    "CtrlSpace": "command:lspcompletion",
     "CtrlUnderscore": "lua:comment.comment",
     "F12": "command:makeup",
     "F5": "command:runit",
-    "F9": "command:makeupbg"
+    "F9": "command:makeupbg",
+    "terminal": {
+        "Ctrl-e": "CommandMode",
+        "Ctrl-q": "Exit"
+    }
 }
